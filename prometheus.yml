@@ -1,4 +1,10 @@
----
-- hosts: all
+--- 
+- hosts: ubuntu
+  become: true
   roles:
-  - prometheus
+    - ubuntu
+
+- hosts: centos
+  become: true
+  roles:
+    - centos
