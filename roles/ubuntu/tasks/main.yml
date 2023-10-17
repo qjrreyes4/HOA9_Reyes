@@ -1,1 +1,13 @@
-
+- name: Install Prometheus (Ubuntu)
+  apt:
+    name: prometheus
+    state: present
+- name: Configure Prometheus
+  template:
+    src: prometheus.yml
+    dest: /etc/prometheus/prometheus.yml
+- name: Start Prometheus
+  service:
+    name: prometheus
+    state: started
+    enabled: yes
