@@ -1,0 +1,8 @@
+---
+- hosts: all
+  tasks:
+  - name: Update Prometheus configuration
+    template:
+      src: prometheus.yml
+      dest: /etc/prometheus/prometheus.yml
+      notify: Restart Prometheus
