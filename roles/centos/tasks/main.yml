@@ -1,4 +1,5 @@
 - name: Install Prometheus (CentOS)
+  tags: centos
   yum:
     name: prometheus
     state: present
