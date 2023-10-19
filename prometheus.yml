@@ -1,9 +1,4 @@
---- 
-- hosts: all
-  become: true
-  roles:
-    - base
-
+---
 - hosts: ubuntu
   become: true
   roles:
