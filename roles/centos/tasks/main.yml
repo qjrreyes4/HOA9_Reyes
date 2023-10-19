@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 - name: Prometheus PATH directory
   file:
     path: ~/prometheus
@@ -44,3 +45,81 @@
     name: httpd
     state: restarted
     enabled: true
+=======
+- name: Prometheus PATH directory
+  file:
+    path: ~/prometheus
+    state: directory
+
+- name: Creating directory for Prometheus files
+  file:
+    path:
+      - /etc/prometheus
+      - /var/lib/prometheus
+    mode: 0777
+    state: directory
+
+- name: Install Prometheus (CentOS)
+  unarchive:
+    src: https://github.com/prometheus/prometheus/releases/download/v2.8.1/prometheus-2.8.1.linux-amd64.tar.gz
+    dest: ~/prometheus
+    remote_src: yes
+    mode: 0777
+    owner: root
+    group: root
+
+- name: Configuring Prometheus
+  shell: |
+    cd ~/prometheus/prometheus*
+    cp -r . /usr/local/bin/prometheus
+
+- name: Create Prometheus Config File
+  copy:
+    content: |
+      global:
+        scrape_interval: 10s
+
+      scrape_configs:
+        - job_name: 'prometheus_master'
+          scrape_interval: 5s
+          static_configs:
+            - targets: ['localhost:9090']
+    dest: /etc/prometheus/prometheus.yml
+    owner: prometheus
+    group: prometheus
+
+- name: Change Ownership of Prometheus Config File
+  shell: chown prometheus:prometheus /etc/prometheus/prometheus.yml
+
+- name: Configure Prometheus Service File
+  copy:
+    content: |
+      [Unit]
+      Description=Prometheus
+      Wants=network-online.target
+      After=network-online.target
+
+      [Service]
+      User=prometheus
+      Group=prometheus
+      Type=simple
+      ExecStart=/usr/local/bin/prometheus \
+      --config.file /etc/prometheus/prometheus.yml \
+      --storage.tsdb.path /var/lib/prometheus/ \
+      --web.console.templates=/etc/prometheus/consoles \
+      --web.console.libraries=/etc/prometheus/console_libraries
+
+      [Install]
+      WantedBy=multi-user.target
+    dest: /etc/systemd/system/prometheus.service
+    owner: root
+    group: root
+
+- name: Reload systemd service
+  shell: systemctl daemon-reload
+
+- name: Start Prometheus service
+  service:
+    name: prometheus
+    state: started
+>>>>>>> 4ffcec59dbfd36c2f64209dff7ec4845d3d9b223
